@@ -1749,7 +1749,8 @@
       "CheckUpdate": "アップデータチェック",
       "ClickToUpdate": "アップデータ実行",
       "RetryUpdate": "アップデータ再試行",
-      "CancelUpdate": "アップデータ中止"
+      "CancelUpdate": "アップデータ中止",
+      "RunNow": "今すぐ実行"
     },
     "Toast": {
       "DisableTranslateMode": "クリックして翻訳モードを中止します",

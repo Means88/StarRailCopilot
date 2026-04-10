@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, List, Optional
 from pywebio.exceptions import SessionException
 from pywebio.io_ctrl import Output
 from pywebio.output import *
+from pywebio.pin import pin
 from pywebio.session import eval_js, local, run_js
 from rich.console import ConsoleRenderable
 
@@ -536,12 +537,32 @@ def put_arg_checkbox(kwargs: T_Output_Kwargs) -> Output:
 
 
 def put_arg_datetime(kwargs: T_Output_Kwargs) -> Output:
+    kwargs = dict(kwargs)
     name: str = kwargs["name"]
+    config_path: str = kwargs.pop("config_path")
+    kwargs.pop("widget_type", None)
+    options: List = kwargs.get("options")
+    if options is not None:
+        kwargs.setdefault("datalist", options)
+
+    def run_now():
+        from datetime import datetime
+
+        alasgui: "AlasGUI" = local.gui
+        val = str(datetime.now().replace(microsecond=0))
+        pin[name] = val
+        alasgui.modified_config_queue.put({"name": config_path, "value": val})
+
     return put_scope(
-        f"arg_container-datetime-{name}",
+        f"arg_container-input-{name}",
         [
             get_title_help(kwargs),
             put_input(**kwargs).style("--input--"),
+            put_button(
+                label=t("Gui.Button.RunNow"),
+                onclick=run_now,
+                color="secondary",
+            ).style("margin-top: 0.25rem; width: 100%;"),
         ],
     )
 
@@ -580,7 +601,7 @@ def put_arg_storage(kwargs: T_Output_Kwargs) -> Optional[Output]:
 _widget_type_to_func: Dict[str, Callable] = {
     "input": put_arg_input,
     "lock": put_arg_input,
-    "datetime": put_arg_input,  # TODO
+    "datetime": put_arg_datetime,
     "select": put_arg_select,
     "textarea": put_arg_textarea,
     "checkbox": put_arg_checkbox,

@@ -1749,7 +1749,8 @@
       "CheckUpdate": "Check update",
       "ClickToUpdate": "Click to update",
       "RetryUpdate": "Retry update",
-      "CancelUpdate": "Cancel update"
+      "CancelUpdate": "Cancel update",
+      "RunNow": "Run now"
     },
     "Toast": {
       "DisableTranslateMode": "Click here to disable translate mode",

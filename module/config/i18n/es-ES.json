@@ -1749,7 +1749,8 @@
       "CheckUpdate": "Comprobar actualización",
       "ClickToUpdate": "Click para actualizar",
       "RetryUpdate": "Reintentar actualización",
-      "CancelUpdate": "Cancelar actualización"
+      "CancelUpdate": "Cancelar actualización",
+      "RunNow": "Ejecutar ahora"
     },
     "Toast": {
       "DisableTranslateMode": "Click aquí para deshabilitar el modo traducido",

@@ -320,6 +320,8 @@ class AlasGUI(Frame):
             output_kwargs["widget_type"] = output_kwargs.pop("type")
 
             arg_name = arg[0]  # [arg_name,]
+            if output_kwargs["widget_type"] == "datetime":
+                output_kwargs["config_path"] = f"{task}.{group_name}.{arg_name}"
             # Internal pin widget name
             output_kwargs["name"] = f"{task}_{group_name}_{arg_name}"
             # Display title
