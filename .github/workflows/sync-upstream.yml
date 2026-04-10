@@ -1,0 +1,57 @@
+# Keep this fork's `master` in sync with upstream LmeSzinc/StarRailCopilot.
+# Uses https://github.com/aormsby/Fork-Sync-With-Upstream-action
+#
+# Scheduled workflows only run on the repository default branch.
+# If upstream is private, add repo secret UPSTREAM_REPO_ACCESS_TOKEN (PAT with contents:read).
+name: Sync upstream
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # Daily 00:00 UTC
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: "Run Fork Sync in test mode (verify inputs, no push)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: true
+
+jobs:
+  sync_latest_from_upstream:
+    runs-on: ubuntu-latest
+    name: Sync master from LmeSzinc/StarRailCopilot
+
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Sync upstream changes
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.3
+        with:
+          target_sync_branch: master
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+          upstream_sync_repo: LmeSzinc/StarRailCopilot
+          upstream_sync_branch: master
+          # Optional; only needed for private upstream (fine-grained PAT, read access)
+          upstream_repo_access_token: ${{ secrets.UPSTREAM_REPO_ACCESS_TOKEN }}
+          test_mode: >-
+            ${{ github.event_name == 'workflow_dispatch' && inputs.test_mode && 'true' || 'false' }}
+
+      - name: New commits synced
+        if: steps.sync.outputs.has_new_commits == 'true'
+        run: echo "Upstream had new commits; fork master was updated."
+
+      - name: Already up to date
+        if: steps.sync.outputs.has_new_commits == 'false'
+        run: echo "No new commits from upstream."
